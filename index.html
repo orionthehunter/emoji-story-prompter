@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Story Prompt Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            font-size: 2em;
+            color: #333;
+        }
+        #emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 200px;
+        }
+        .emoji {
+            font-size: 2em;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emoji Story Prompt Generator</h1>
+    <div id="emoji-grid"></div>
+    <button id="generate-button">Generate story prompt</button>
+    <button id="copy-button" style="display: none;">Copy to clipboard</button>
+
+    <script>
+        const emojiGrid = document.getElementById('emoji-grid');
+        const generateButton = document.getElementById('generate-button');
+        const copyButton = document.getElementById('copy-button');
+        
+        // Full emoji set (filtered to Unicode emojis, can add more if desired)
+        const emojiSet = Array.from({ length: 111411 }, (_, i) => String.fromCodePoint(i))
+            .filter(e => /\p{Extended_Pictographic}/u.test(e));
+
+        function generateEmojiSet() {
+            const emojiSetCopy = [...emojiSet];
+            const selectedEmojis = [];
+            for (let i = 0; i < 9; i++) {
+                const randomIndex = Math.floor(Math.random() * emojiSetCopy.length);
+                selectedEmojis.push(emojiSetCopy.splice(randomIndex, 1)[0]);
+            }
+            return selectedEmojis;
+        }
+
+        function displayEmojiGrid(emojiArray) {
+            emojiGrid.innerHTML = '';
+            emojiArray.forEach(emoji => {
+                const div = document.createElement('div');
+                div.textContent = emoji;
+                div.className = 'emoji';
+                emojiGrid.appendChild(div);
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        generateButton.addEventListener('click', () => {
+            const emojis = generateEmojiSet();
+            displayEmojiGrid(emojis);
+            generateButton.textContent = 'Regenerate';
+            copyButton.style.display = 'inline-block';
+        });
+
+        copyButton.addEventListener('click', () => {
+            const emojis = Array.from(emojiGrid.children).map(div => div.textContent).join('');
+            copyToClipboard(emojis);
+        });
+    </script>
+</body>
+</html>
